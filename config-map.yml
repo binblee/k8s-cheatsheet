@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-appvars
+data:
+  apploglevel: info
+  appdatadir: /var/data
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-test-pod
+spec:
+  containers:
+  - name: cm-test
+    image: tomcat
+    envFrom:
+    - configMapRef:
+        name: cm-appvars
+  restartPolicy: Never

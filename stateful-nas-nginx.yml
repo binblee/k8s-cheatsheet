@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv01
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /pv01
+    server: xxx.cn-beijing.nas.aliyuncs.com
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv02
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /pv02
+    server: xxx.cn-beijing.nas.aliyuncs.com
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-stateful
+  labels:
+    app: nginx-stateful
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx-stateful
+
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nginx-stateful
+spec:
+  serviceName: "nginx-stateful"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx-stateful
+    spec:
+      containers:
+      - name: nginx-stateful
+        image: nginx
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      resources:
+        requests:
+          storage: 5Gi
