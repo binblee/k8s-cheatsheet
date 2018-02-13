@@ -1,0 +1,63 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: jenkins
+    spec:
+      serviceAccountName: kubernetes-jenkins
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: jenkins
+        image: registry.cn-hangzhou.aliyuncs.com/ringtail/jenkins:0.1
+        imagePullPolicy: Always
+        volumeMounts:
+        - mountPath: /var/jenkins_home
+          name: home
+      volumes:
+        - name: home
+          hostPath:
+            path: /var/lib/jenkins
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: web
+  - port: 50000
+    targetPort: 50000
+    name: slave
+  selector:
+    k8s-app: jenkins
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: kubernetes-jenkins
+  name: kubernetes-jenkins
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: kubernetes-jenkins
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-jenkins
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
