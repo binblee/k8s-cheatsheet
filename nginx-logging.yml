@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-logging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-logging
+  template:
+    metadata:
+      labels:
+        app: nginx-logging
+    spec:
+      containers:
+      - name: nginx-logging
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: aliyun_logs_nginxstdout
+          value: "stdout"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-logging
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    name: nginx-logging
+  selector:
+    app: nginx-logging
+  type: LoadBalancer

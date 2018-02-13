@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tomcat-logging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tomcat-logging
+  template:
+    metadata:
+      labels:
+        app: tomcat-logging
+    spec:
+      containers:
+      - name: tomcat-logging
+        image: tomcat:9
+        ports:
+        - containerPort: 8080
+        env:
+        - name: aliyun_logs_tomcatstdout
+          value: "stdout"
+        - name: aliyun_logs_tomcataccess
+          value: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
+        volumeMounts:
+        - mountPath: /usr/local/tomcat/logs/
+          name: logfiles-volume
+      volumes:
+      - name: logfiles-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-logging
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: tomcat-logging
+  selector:
+    app: tomcat-logging
+  type: LoadBalancer
