@@ -27,7 +27,11 @@ http://x.x.x.x:8080/
 ```
 ## after 1.9.0
 
-Not verified yet.
+```
+kubectl create secret generic mysql-pass --from-literal=password=password
+kubectl create -f mysql-deployment-1.9.yaml
+kubectl create -f wordpress-deployment-1.9.yaml
+```
 
 
 
