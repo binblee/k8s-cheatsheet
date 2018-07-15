@@ -1,0 +1,45 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  name: alicloud-disk-common-hangzhou-b
+provisioner: alicloud/disk
+parameters:
+  type: cloud_ssd
+  regionid: cn-hangzhou
+  zoneid: cn-hangzhou-b
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: disk-common
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: alicloud-disk-common-hangzhou-b
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-volume-ondemand
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-flexvolume-disk
+        image: nginx
+        volumeMounts:
+          - name: "disk-pvc"
+            mountPath: "/data"
+      volumes:
+        - name: "disk-pvc"
+          persistentVolumeClaim:
+            claimName: disk-common
