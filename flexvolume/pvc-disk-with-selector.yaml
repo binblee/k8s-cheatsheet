@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: $$DISK_ID$$
+  labels:
+    failure-domain.beta.kubernetes.io/zone: $$DISK_ZONE_ID$$
+    failure-domain.beta.kubernetes.io/region: $$DISK_REGION_ID$$
+    alicloud-pvname: $$DISK_ID$$
+spec:
+  capacity:
+    storage: 50Gi
+  storageClassName: disk
+  accessModes:
+    - ReadWriteOnce
+  flexVolume:
+    driver: "alicloud/disk"
+    fsType: "ext4"
+    options:
+      volumeId: "$$DISK_ID$$"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: $$DISK_ID$$ #TODO: pvc claim to use by pod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: disk
+  resources:
+    requests:
+      storage: 50Gi
+  selector:
+    matchLabels:
+      alicloud-pvname: $$DISK_ID$$
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-volume-with-selector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-volume-with-selector
+        image: nginx
+        volumeMounts:
+          - name: "disk-pvc"
+            mountPath: "/data"
+      volumes:
+        - name: "disk-pvc"
+          persistentVolumeClaim:
+            claimName: $$DISK_ID$$
