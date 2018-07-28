@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-multi-zone
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-multi-zone
+  template:
+    metadata:
+      labels:
+        app: nginx-multi-zone
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: failure-domain.beta.kubernetes.io/zone
+                operator: In
+                values:
+                - cn-hangzhou-b
+                - cn-hangzhou-f
+      containers:
+      - name: nginx-multi-zone
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-multi-zone
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    name: nginx-multi-zone
+  selector:
+    app: nginx-multi-zone
+  type: LoadBalancer
