@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-demo
+  template:
+    metadata:
+      labels:
+        app: nginx-demo
+    spec:
+      containers:
+      - name: nginx-demo
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-demo
+  annotations:
+    service.beta.kubernetes.io/alicloud-loadbalancer-cert-id: xxxx
+    service.beta.kubernetes.io/alicloud-loadbalancer-protocol-port: "tcp:9023"
+spec:
+  ports:
+  - port: 9023
+    targetPort: 80
+    name: nginx-demo
+  selector:
+    app: nginx-demo
+  type: LoadBalancer
