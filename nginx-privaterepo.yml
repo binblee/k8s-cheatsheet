@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-private
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-private
+  template:
+    metadata:
+      labels:
+        app: nginx-private
+    spec:
+      containers:
+      - name: nginx-private
+        image: registry-vpc.cn-hangzhou.aliyuncs.com/jingshan/nginxprivate:latest
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regsecret-vpc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-private
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    name: nginx-private
+  selector:
+    app: nginx-private
+  type: LoadBalancer
