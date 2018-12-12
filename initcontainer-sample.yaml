@@ -1,0 +1,34 @@
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: sample-deployment
+  labels:
+    app: sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample
+  template:
+    metadata:
+      labels:
+        app: sample
+    spec:
+      hostIPC: true
+      initContainers:
+      - image: busybox
+        command:
+        - sh
+        - -c
+        - echo 1024 > /proc/sys/kernel/msgmni && echo 65536 > /proc/sys/kernel/msgmax && echo 65536 > /proc/sys/kernel/msgmnb && echo '250 256000 32 1024' > /proc/sys/kernel/sem
+        imagePullPolicy: Always
+        name: setsysctl
+        securityContext:
+          privileged: true
+      containers:
+      - name: sample
+        image: tomcat:latest
+        ports:
+        - containerPort: 80
+

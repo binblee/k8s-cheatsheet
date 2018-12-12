@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-eni
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-eni
+  template:
+    metadata:
+      labels:
+        app: nginx-eni
+    spec:
+      containers:
+      - name: nginx-eni
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            aliyun/eni: 1
