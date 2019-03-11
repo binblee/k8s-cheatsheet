@@ -13,12 +13,12 @@ spec:
       - name: nginx-flexvolume-disk
         image: nginx
         volumeMounts:
-          - name: "d-bp1jc0rsr11ahtbn8j71"
+          - name: "d-uf668ge5c1uwl6thardf"
             mountPath: "/data"
       volumes:
-        - name: "d-bp1jc0rsr11ahtbn8j71"
+        - name: "d-uf668ge5c1uwl6thardf"
           flexVolume:
             driver: "alicloud/disk"
             fsType: "ext4"
             options:
-              volumeId: "d-bp1jc0rsr11ahtbn8j71"
+              volumeId: "d-uf668ge5c1uwl6thardf"
