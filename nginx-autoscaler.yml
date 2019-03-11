@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: nginx-autoscaler
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: nginx-autoscaler
@@ -13,7 +13,7 @@ spec:
         app: nginx-autoscaler
     spec:
       nodeSelector:
-        created_by_autoscaler: "true"
+        customized_label: "1"
       containers:
       - name: nginx-autoscaler
         image: nginx:latest
