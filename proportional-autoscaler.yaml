@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-autoscaler
+  namespace: kube-system
+  labels:
+    k8s-app: dns-autoscaler
+spec:
+  selector:
+    matchLabels:
+       k8s-app: dns-autoscaler
+  template:
+    metadata:
+      labels:
+        k8s-app: dns-autoscaler
+    
+    spec:
+      containers:
+      - name: autoscaler
+        image: registry.cn-hangzhou.aliyuncs.com/ringtail/cluster-proportional-autoscaler-amd64:v1.3.0
+        resources:
+            requests:
+                cpu: "200m"
+                memory: "150Mi"
+        command:
+          - /cluster-proportional-autoscaler
+          - --namespace=kube-system
+          - --configmap=dns-autoscaler
+          - --target=Deployment/coredns
+          - --default-params={"linear":{"coresPerReplica":16,"nodesPerReplica":2,"min":1,"max":100,"preventSinglePointFailure":true}}
+          - --logtostderr=true
+          - --v=2
+      serviceAccountName: admin
