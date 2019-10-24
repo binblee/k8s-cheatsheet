@@ -26,14 +26,14 @@ metadata:
     derrick.service: nodejs
   name: nodejs
 spec:
-  replicas: 1
+  replicas: 10
   template:
     metadata:
       labels:
         derrick.service: nodejs
     spec:
       containers:
-      - image: registry.cn-hangzhou.aliyuncs.com/jingshan/demo-nodejs-express:latest
+      - image: registry.cn-hangzhou.aliyuncs.com/jingshan/demo-nodejs-express:0.1
         name: web
         ports:
         - containerPort: 3000

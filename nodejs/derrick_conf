@@ -1,1 +1,1 @@
-{"rigging_name": "NodejsRigging", "platform": "NodeJs", "image_with_tag": "registry.cn-hangzhou.aliyuncs.com/jingshan/demo-nodejs-express:latest"}
+{"rigging_name": "NodejsRigging", "platform": "NodeJs", "image_with_tag": "registry.cn-hangzhou.aliyuncs.com/jingshan/demo-nodejs-express:0.2"}
